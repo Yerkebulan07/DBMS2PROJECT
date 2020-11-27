@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock title %}
+
+{% block body %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/authorization.css') }}">
+    <table class="table__users users">
+        <tr>
+            <th>ID</th>
+            <th>Username</th>
+            <th>First name</th>
+            <th>Last name</th>
+        </tr>
+        {% for user in users %}
+            <tr>
+                <td>{{ user[0] }}</td>
+                <td>{{ user[1] }}</td>
+                <td>{{ user[2] }}</td>
+                <td>{{ user[3] }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+    <div>
+        <a href="/logout">Logout</a>
+    </div>
+{% endblock body %}
+
+
