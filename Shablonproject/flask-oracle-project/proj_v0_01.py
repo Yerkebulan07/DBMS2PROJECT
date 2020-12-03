@@ -3,7 +3,7 @@ from flask import Flask, request, session, render_template, redirect, url_for
 from hashlib import sha256
 
 try:
-    conn = cx_Oracle.connect('super/abcd1234@//localhost:1521/ORCL')
+    conn = cx_Oracle.connect('super/abcd1234@//localhost:1521/orcl')
 except Exception as err:
     print('Error while creating the connection ', err)
 
@@ -64,27 +64,27 @@ def insert_into_users(columns, *args):
 		cur.close()
 
 
-@app.route('/')
-@app.route('/home')
-def index():
-	err = []
-	if session['email'] is not None and session['password'] is not None:
-		email = session['email']
-		password = session['password']
-		users = select_from_users_where(
-			"id, email, first_name, last_name", 
-			"email=:1 AND password=:2", 
-			email, password
-		)
-		if len(users) > 0:
-			return render_template('home.html', users=users)
-		else:
-			err.append("Username OR password is incorrect.")
-			return render_template('login.html', errors=err)
-	else:
-		return redirect('/login')
 
-
+	
+# @app.route('/')
+# @app.route('/home')
+# def index():
+# 	err = []
+# 	if session['email'] is not None and session['password'] is not None:
+# 		email = session['email']
+# 		password = session['password']
+# 		users = select_from_users_where(
+# 			"id, email, first_name, last_name", 
+# 			"email=:1 AND password=:2", 
+# 			email, password
+# 		)
+# 		if len(users) > 0:
+# 			return render_template('home.html', users=users)
+# 		else:
+# 			err.append("Username OR password is incorrect.")
+# 			return render_template('login.html', errors=err)
+# 	else:
+# 		return redirect('/login')
 @app.route('/register', methods=['POST', 'GET'])
 def register():
 	err = []
@@ -102,6 +102,13 @@ def register():
 		users = select_from_users('id, email, first_name, last_name')
 		return render_template('register.html', users=users)
 
+@app.route('/')
+def index():
+	if session['email'] == None:
+		return render_template('login.html')
+	else:
+		print(session['email'])
+		return render_template('home.html', user=session['email'])
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
@@ -114,7 +121,9 @@ def login():
 			"email=:1 AND password=:2", 
 			email, password
 		)
+		print(password +" until ) ")
 		if len(users) > 0:
+			print(users)
 			session['email'] = email
 			session['password'] = password
 			return redirect("/")
