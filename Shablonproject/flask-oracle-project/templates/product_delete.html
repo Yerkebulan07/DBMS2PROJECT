@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}Product detail{% endblock title %}
+
+{% block body %}
+
+<form >
+
+    <div><h1>Are you sure to delete ? {{product[0][2]}}</h1></div>
+
+    <button class="delete">Confirm</button>
+    
+</form>
+<form action="/product/{{product[0][0]}}">
+    <button class="no">I don't want to delete</button>
+</form>
+
+{% endblock body%}
