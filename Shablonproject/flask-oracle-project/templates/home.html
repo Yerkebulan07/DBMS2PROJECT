@@ -4,9 +4,24 @@
 
 {% block body %}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/authorization.css') }}">
-    <h3>Hello {{ user}}</h3>
-    <div>
-        <a href="/logout">Logout</a>
+    {% if session['email'] %}
+        <h3>Hello {{ session['email']}}</h3>
+    {% endif %}
+
+    <div id="main" class="product-list">
+        <h1>Products</h1>
+        {% for product in products %}
+        <div class="item">
+            <a href="product/{{product[0]}}">
+                <img src="{% if product[5] %}{{ product[5] }}
+                {%else %} 
+                    {{ url_for('static', filename='img/no_image.png') }}{% endif %}">
+            </a>
+            <a href="product/{{product[0]}}">{{ product[2] }}</a>
+            <br>
+            ${{ product[3] }}
+        </div>
+        {% endfor %}
     </div>
 {% endblock body %}
 

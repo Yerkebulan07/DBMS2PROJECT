@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}Product detail{% endblock title %}
+
+{% block body %}
+    <div class="product-detail">
+        <a href="{{ product.get_absolute_url }}">
+            <img src="{% if product[0][5] %}{{ product[0][5] }}
+            {%else %} 
+                {{ url_for('static', filename='img/no_image.png') }}{% endif %}">
+        </a>
+
+        {% if owner== 1%}
+            <div><a href="">update</a></div>
+            <div><a href="">delete</a></div>
+        {% endif %}
+        <h1>{{ product[0][2] }} </h1>
+
+        <p class="price">${{ product[0][3] }}</p>
+
+
+        {{ product[0][6] }}
+    </div>
+{% endblock body %}

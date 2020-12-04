@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Create product{% endblock title %}
+
+{% block body%}
+<form method="post">
+    <table>
+        <tr>
+            <td colspan="2">
+                <h2 style="text-align:center;">Authorization</h2>
+            </td>
+        </tr>
+        <tr>
+            <label>
+                <td>Product name</td>
+                <td><input type="text" name="name"></td>
+            </label>
+        </tr>
+        <tr>
+            <label>
+                <td>Product description</td>
+                <td><input type="text" name="description"></td>
+            </label>
+        </tr><tr>
+            <label>
+                <td>Product price</td>
+                <td><input type="number" name="price"></td>
+            </label>
+        </tr><tr>
+            <label>
+                <td>Product url</td>
+                <td><input type="text" name="image_url"></td>
+            </label>
+        </tr>
+        <tr>
+            <td colspan="2"><button class="upload">confirm</button></td>
+        </tr>
+    </table>
+</form>
+<div class="errors">
+    {% for error in errors %}
+    <div class="error">{{ error }}</div>
+    {% endfor %}
+</div>
+{% endblock body%}
