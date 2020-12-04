@@ -173,7 +173,37 @@ def register():
 		users = select_from_users('id, email, first_name, last_name')
 		return render_template('register.html', users=users)
 
+@app.route('/product/delete/<int:product_id>', methods=['POST', 'GET'])
+def delete_product(product_id):
+	if request.method == 'GET':
+		product = select_product_from_products('id=:1',product_id)
+		return render_template('product_delete.html', product=product)
+	else:
+		cur = conn.cursor()
+		answer = cur.callfunc('product_pkg.deleteProduct', str, [product_id])
+		print(answer)
+		conn.commit()
 
+		return redirect('/')
+
+@app.route('/product/update/<int:product_id>', methods = ['POST', 'GET'])
+def product_update(product_id):
+	if request.method == 'POST':
+		product_name = request.form['name']
+		product_description = request.form['description']
+		product_price = request.form['price']
+		product_image_url = request.form['image_url']
+		
+		cur = conn.cursor()
+		answer = cur.callfunc('product_pkg.updateProduct', str, [product_id, product_name, product_price, product_image_url, product_description])
+		if answer== 'Updated':
+			conn.commit()
+		return redirect('/product/'+str(product_id))
+		
+	else:
+		product = select_product_from_products('id=:1' ,product_id)
+		return render_template('product_update.html', product = product)
+		
 
 @app.route('/')
 def index():
@@ -184,21 +214,25 @@ def index():
 		else: 
 			return redirect('/login')
 
-@app.route('/product/delete/')
+
 
 @app.route('/product/<int:product_id>')
 def product_detail(product_id):
 	if request.method == 'GET':
-		product = select_product_from_products('id=:1' ,product_id)
-		user_id = select_from_users_where('id', 'email=:1',session['email'])
-		merchant_id = select_merchantId_from_merchants('admin_id=:1', user_id[0][0])[0][0]
-		if merchant_id!=[]:
-			merchant_id_of_product = product[0][1]
-			print(merchant_id_of_product)
-			print(merchant_id)
-			if merchant_id_of_product == merchant_id:
-				
-				return render_template('product_detail.html', product = product, owner=1)
+		if not session['email']:
+			return redirect('/login')
+		else:
+			product = select_product_from_products('id=:1' ,product_id)
+			user_id = select_from_users_where('id', 'email=:1',session['email'])
+			merchant_id = select_merchantId_from_merchants('admin_id=:1', user_id[0][0])
+			if merchant_id!=[]:
+				merchant_id = merchant_id[0][0]
+				merchant_id_of_product = product[0][1]
+				print(merchant_id_of_product)
+				print(merchant_id)
+				if merchant_id_of_product == merchant_id:
+					
+					return render_template('product_detail.html', product = product, owner=1)
 		
 	
 		

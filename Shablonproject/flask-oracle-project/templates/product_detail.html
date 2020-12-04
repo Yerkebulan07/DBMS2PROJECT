@@ -11,8 +11,8 @@
         </a>
 
         {% if owner== 1%}
-            <div><a href="">update</a></div>
-            <div><a href="">delete</a></div>
+            <div><a href="/product/update/{{product[0][0]}}">update</a></div>
+            <div><a href="/product/delete/{{product[0][0]}}">delete</a></div>
         {% endif %}
         <h1>{{ product[0][2] }} </h1>
 
