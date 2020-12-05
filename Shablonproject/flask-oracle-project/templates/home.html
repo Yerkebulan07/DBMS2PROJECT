@@ -3,26 +3,30 @@
 {% block title %}Home{% endblock title %}
 
 {% block body %}
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/authorization.css') }}">
-    {% if session['email'] %}
-        <h3>Hello {{ session['email']}}</h3>
-    {% endif %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/authorization.css') }}">
+{% if session['email'] %}
+<h3>Hello {{ session['email']}}</h3>
+{% endif %}
 
-    <div id="main" class="product-list">
-        <h1>Products</h1>
-        {% for product in products %}
-        <div class="item">
-            <a href="product/{{product[0]}}">
-                <img src="{% if product[5] %}{{ product[5] }}
+<div style="text-align: center;">
+    <a href="/product/create">Create a product</a>
+    <a href="/kart">My kart</a>
+</div>
+<div id="main" class="product-list">
+    <h1>Products</h1>
+    {% for product in products %}
+    <div class="item">
+        <a href="product/{{product[0]}}">
+            <img src="{% if product[5] %}{{ product[5] }}
                 {%else %} 
                     {{ url_for('static', filename='img/no_image.png') }}{% endif %}">
-            </a>
-            <a href="product/{{product[0]}}">{{ product[2] }}</a>
-            <br>
-            ${{ product[3] }}
-        </div>
-        {% endfor %}
+        </a>
+        <a href="product/{{product[0]}}">{{ product[2] }}</a>
+        <br>
+        ${{ product[3] }}
     </div>
+    {% endfor %}
+</div>
+
+
 {% endblock body %}
-
-

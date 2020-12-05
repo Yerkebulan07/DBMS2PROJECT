@@ -127,8 +127,8 @@ def insert_into_product(merchant_id, product_name, product_price, product_image_
 	err = []
 	try:
 		cur = conn.cursor()
-		data = (merchant_id, product_name, product_price, product_image_url, product_description)
-		cur.callproc('insert_into_product', data)
+		data = (product_name, merchant_id, product_price, product_image_url, product_description)
+		cur.callproc('product_pkg.addProduct', data)
 	except cx_Oracle.IntegrityError as e:
 		errorObj, = e.args
 		err.append("ERROR: " + str(errorObj))
@@ -210,8 +210,8 @@ def delete_product(product_id):
 		return render_template('product_delete.html', product=product)
 	else:
 		cur = conn.cursor()
-		cur.callproc('kart_pkg.deleteProductInKart', [product_id])
-		answer = cur.callfunc('product_pkg.deleteProduct', str, [product_id])
+		cur.callproc('kart_pkg.deleteProductInKart', [product_id])               # delete all products in kart
+		answer = cur.callfunc('product_pkg.deleteProduct', str, [product_id])    # delete product from products
 		print(answer)
 		conn.commit()
 
@@ -246,6 +246,12 @@ def index():
 		else: 
 			return redirect('/login')
 
+@app.route('/kart/delete/<int:product_id>', methods=['POST', 'GET'])
+def delete_kart(product_id):
+	if request.method == 'POST':
+		user_id = select_from_users_where('id', 'email=:1',session['email'])[0][0]
+		delete_product_from_kart(product_id, user_id)
+		return redirect('/kart')
 
 
 @app.route('/product/<int:product_id>', methods=['POST', 'GET'])
@@ -281,10 +287,21 @@ def my_kart():
 		if session['email'] :
 			user_id = select_from_users_where('id', 'email=:1',session['email'])[0][0]
 			products_id = select_product_id_from_kart(user_id)
+			products_id = [item for t in products_id for item in t]
 			products = []
-			print(products_id)
-			return redirect('/')
+			calculate_prices = 0
+			for product_id in products_id:
+				products.append(select_product_from_products('id=:1', product_id))
+
+			if len(products_id)>0:
+				cur = conn.cursor()
+
+				calculate_prices = 	cur.callfunc('kart_price.calculatePrice', int, [user_id])
 			
+			return render_template('kart.html', products=products, calculate_prices = calculate_prices)
+		
+		else:
+			return redirect('/login')
 
 	
 @app.route('/product/create', methods=['POST', 'GET'])

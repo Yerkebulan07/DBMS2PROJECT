@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Product detail{% endblock title %}
+
+{% block body %}
+
+
+<div id="main" class="product-list">
+    <h1>Products</h1>
+    {% if calculate_prices!=0 %}
+        <h2>Sum of all products {{calculate_prices}}</h2>
+    {% endif%}
+    
+    {% for product in products %}
+    <div class="item">
+        <a href="product/{{product[0][0]}}">
+            <img src="{% if product[0][5] %}{{ product[0][5] }}
+            {%else %} 
+                {{ url_for('static', filename='img/no_image.png') }}{% endif %}">
+        </a>
+        <a href="product/{{product[0][0]}}">{{ product[2] }}</a>
+        <br>
+        ${{ product[0][3] }}
+        <form action="/kart/delete/{{product[0][0]}}" method="post">
+            <button>Delete product from kart</button>
+        </form>
+    </div>
+    {% endfor %}
+</div>
+
+
+{% endblock body%}
