@@ -71,6 +71,36 @@ def select_product_from_products(product, *args):
 		cur.close()
 	return product
 
+def select_product_id_from_kart(user_id):
+	try:
+		cur = conn.cursor()
+		sql_select = f"SELECT PRODUCTID FROM KART WHERE USERID = {user_id}"
+		print(sql_select)
+		cur.execute(sql_select)
+		ids = cur.fetchall()
+	except Exception as err:
+		print('Error selecting id from kart ', err)
+	else:
+		print('selected all products id from Kard.')
+	finally:
+		cur.close()
+	return ids
+
+def delete_product_from_kart(product_id, user_id):
+	try:
+		cur = conn.cursor()
+		sql_select = f"DELETE FROM kart WHERE PRODUCTID = {product_id} AND USERID = {user_id}"
+		cur.execute(sql_select)
+	except Exception as err:
+		print('Error when deleting product from kard ', err)
+		conn.rollback()
+	else:
+		print('Deleted Kard.')
+		conn.commit()
+	finally:
+		cur.close()
+	
+
 def insert_into_users(columns, *args):
 	email, password, first_name, last_name = args
 	values = ":1"
@@ -180,6 +210,7 @@ def delete_product(product_id):
 		return render_template('product_delete.html', product=product)
 	else:
 		cur = conn.cursor()
+		cur.callproc('kart_pkg.deleteProductInKart', [product_id])
 		answer = cur.callfunc('product_pkg.deleteProduct', str, [product_id])
 		print(answer)
 		conn.commit()
@@ -203,7 +234,8 @@ def product_update(product_id):
 	else:
 		product = select_product_from_products('id=:1' ,product_id)
 		return render_template('product_update.html', product = product)
-		
+
+
 
 @app.route('/')
 def index():
@@ -243,7 +275,17 @@ def product_detail(product_id):
 		return redirect('/')
 	
 		
-		
+@app.route('/kart')
+def my_kart():
+	if request.method == 'GET':
+		if session['email'] :
+			user_id = select_from_users_where('id', 'email=:1',session['email'])[0][0]
+			products_id = select_product_id_from_kart(user_id)
+			products = []
+			print(products_id)
+			return redirect('/')
+			
+
 	
 @app.route('/product/create', methods=['POST', 'GET'])
 def create_product():
