@@ -216,7 +216,7 @@ def index():
 
 
 
-@app.route('/product/<int:product_id>')
+@app.route('/product/<int:product_id>', methods=['POST', 'GET'])
 def product_detail(product_id):
 	if request.method == 'GET':
 		if not session['email']:
@@ -233,10 +233,17 @@ def product_detail(product_id):
 				if merchant_id_of_product == merchant_id:
 					
 					return render_template('product_detail.html', product = product, owner=1)
-		
+			return render_template('product_detail.html', product = product, owner=0)	
+	if request.method == 'POST':
+		user_id = select_from_users_where('id', 'email=:1',session['email'])[0][0]
+		cur = conn.cursor()
+		cur.callproc('kart_pkg.addKart', [user_id, product_id])
+		conn.commit()
+
+		return redirect('/')
 	
 		
-	return render_template('product_detail.html', product = product, owner=0)
+		
 	
 @app.route('/product/create', methods=['POST', 'GET'])
 def create_product():
