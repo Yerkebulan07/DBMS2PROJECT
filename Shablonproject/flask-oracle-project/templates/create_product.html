@@ -3,7 +3,7 @@
 {% block title %}Create product{% endblock title %}
 
 {% block body%}
-<form method="post">
+<form method="post" enctype="multipart/form-data">
     <table>
         <tr>
             <td colspan="2">
@@ -28,8 +28,8 @@
             </label>
         </tr><tr>
             <label>
-                <td>Product url</td>
-                <td><input type="text" name="image_url"></td>
+                <td>upload image</td>
+                <td><input type="file" name="file" accept="image/*"></td>
             </label>
         </tr>
         <tr>

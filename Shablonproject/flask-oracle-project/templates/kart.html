@@ -14,9 +14,13 @@
     {% for product in products %}
     <div class="item">
         <a href="product/{{product[0][0]}}">
-            <img src="{% if product[0][5] %}{{ product[0][5] }}
+            {% if product[0][5] %}
+            
+            <img src= "static/img/{{product[0][5]}}" alt="d">
+            
             {%else %} 
-                {{ url_for('static', filename='img/no_image.png') }}{% endif %}">
+            <img src= "{{ url_for('static', filename='img/no_image.png') }} ">
+            {% endif %}
         </a>
         <a href="product/{{product[0][0]}}">{{ product[2] }}</a>
         <br>

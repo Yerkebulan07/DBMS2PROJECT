@@ -1,7 +1,11 @@
 import cx_Oracle
-from flask import Flask, request, session, render_template, redirect, url_for
+from flask import Flask, request, session, render_template, redirect, url_for, flash
 from hashlib import sha256
 from datetime import datetime, date, time
+from werkzeug.utils import secure_filename
+from os.path import join, dirname, realpath
+import os
+
 
 try:
     conn = cx_Oracle.connect('super/abcd1234@//localhost:1521/orcl')
@@ -9,8 +13,10 @@ except Exception as err:
     print('Error while creating the connection ', err)
 
 
+UPLOADS_PATH = join(dirname(realpath(__file__)), 'static\\img')
 app = Flask(__name__)
 app.secret_key = "secret_key"
+
 
 
 def select_from_users(select):
@@ -71,6 +77,21 @@ def select_product_from_products(product, *args):
 		cur.close()
 	return product
 
+def select_product_and_product_owner_name(where, *args):
+	try:
+		cur = conn.cursor()
+		sql_select = f"select product.id, product.name, product.price, product.image_url, product.description, merchants.merchant_name, product.merchant_id from product INNER JOIN merchants ON product.merchant_id = merchants.id and  product.{where} "
+		data = tuple(args)
+		cur.execute(sql_select, data)
+		products = cur.fetchall()
+	except Exception as err:
+		print('Exception occured while fetching the records ', err)
+	else:
+		print('Query Completed.')
+	finally:
+		cur.close()
+	return products
+
 def select_product_id_from_kart(user_id):
 	try:
 		cur = conn.cursor()
@@ -108,9 +129,10 @@ def insert_into_users(columns, *args):
 		values += ", :" + str(i+1)
 	try:
 		cur = conn.cursor()
-		sql_insert = f"INSERT INTO USERS(id, {columns}) VALUES(USERS_SEQ.nextval, {values})"
-		data = (email, sha256(password.encode("UTF-8")).hexdigest(), first_name, last_name)
-		cur.execute(sql_insert, data)
+		#sql_insert = f"INSERT INTO USERS(id, {columns}) VALUES(USERS_SEQ.nextval, {values})"
+		#data = (email, , first_name, last_name)
+		password = sha256(password.encode("UTF-8")).hexdigest()
+		cur.callproc('sign_pkg.signUp', [first_name, last_name, email, password])
 	except cx_Oracle.IntegrityError as e:
 		errorObj, = e.args
 		print('ERROR while inserting the data ', errorObj)
@@ -223,8 +245,13 @@ def product_update(product_id):
 		product_name = request.form['name']
 		product_description = request.form['description']
 		product_price = request.form['price']
-		product_image_url = request.form['image_url']
-		
+		# product_image_url = request.form['image_url']
+		if request.files['file'].filename != '':
+			image = request.files['file']
+			product_image_url = image.filename
+			image.save(os.path.join(UPLOADS_PATH, secure_filename(image.filename)))
+
+
 		cur = conn.cursor()
 		answer = cur.callfunc('product_pkg.updateProduct', str, [product_id, product_name, product_price, product_image_url, product_description])
 		if answer== 'Updated':
@@ -260,12 +287,16 @@ def product_detail(product_id):
 		if not session['email']:
 			return redirect('/login')
 		else:
-			product = select_product_from_products('id=:1' ,product_id)
+			#product = select_product_from_products('id=:1' ,product_id)
+			
 			user_id = select_from_users_where('id', 'email=:1',session['email'])
 			merchant_id = select_merchantId_from_merchants('admin_id=:1', user_id[0][0])
+			product = select_product_and_product_owner_name('id=:1' ,product_id)
+			
+			print(product[0][3])
 			if merchant_id!=[]:
 				merchant_id = merchant_id[0][0]
-				merchant_id_of_product = product[0][1]
+				merchant_id_of_product = product[0][6]
 				print(merchant_id_of_product)
 				print(merchant_id)
 				if merchant_id_of_product == merchant_id:
@@ -292,7 +323,7 @@ def my_kart():
 			calculate_prices = 0
 			for product_id in products_id:
 				products.append(select_product_from_products('id=:1', product_id))
-
+			print(products)
 			if len(products_id)>0:
 				cur = conn.cursor()
 
@@ -303,7 +334,10 @@ def my_kart():
 		else:
 			return redirect('/login')
 
-	
+
+
+ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
+
 @app.route('/product/create', methods=['POST', 'GET'])
 def create_product():
 	if request.method == 'POST':
@@ -311,11 +345,18 @@ def create_product():
 			product_name = request.form['name']
 			product_description = request.form['description']
 			product_price = request.form['price']
-			product_image_url = request.form['image_url']
 			
+			
+
 			user_id = select_from_users_where('id', 'email=:1',session['email'])
 			user_id = user_id[0][0]
-			print(user_id)
+			
+			if request.files['file'].filename != '':
+				image = request.files['file']
+				
+				
+				product_image_url = image.filename
+				image.save(os.path.join(UPLOADS_PATH, secure_filename(image.filename)))
 			merchant_id = select_merchantId_from_merchants('admin_id=:1', user_id)
 			
 
@@ -340,14 +381,16 @@ def login():
 	if request.method == 'POST':
 		email = request.form['email']
 		password = sha256(request.form['password'].encode("UTF-8")).hexdigest()
-		users = select_from_users_where(
-			"id, email, first_name, last_name", 
-			"email=:1 AND password=:2", 
-			email, password
-		)
-		print(password +" until ) ")
-		if len(users) > 0:
-			print(users)
+		# users = select_from_users_where(
+		# 	"id, email, first_name, last_name", 
+		# 	"email=:1 AND password=:2", 
+		# 	email, password
+		# )
+		cur = conn.cursor()
+		answer = cur.callfunc("sign_pkg.signInByFunction", str, [email, password])
+		print(answer)
+		if answer=='Success':
+			
 			session['email'] = email
 			session['password'] = password
 			return redirect("/")

@@ -4,26 +4,31 @@
 
 {% block body %}
     <div class="product-detail">
-        <a href="{{ product.get_absolute_url }}">
-            <img src="{% if product[0][5] %}{{ product[0][5] }}
+        <a href="">
+            {% if product[0][3] %}
+            
+            <img src= "{{url_for('static', filename=('img/'+product[0][3]) )}}" alt="d">
+            
             {%else %} 
-                {{ url_for('static', filename='img/no_image.png') }}{% endif %}">
+            <img src= "{{ url_for('static', filename='img/no_image.png') }} ">
+            {% endif %}
         </a>
 
         {% if owner== 1%}
             <div><a href="/product/update/{{product[0][0]}}">update</a></div>
             <div><a href="/product/delete/{{product[0][0]}}">delete</a></div>
         {% endif %}
-        <h1>{{ product[0][2] }} </h1>
+        <h1>{{ product[0][1] }} </h1>
 
-        <p class="price">${{ product[0][3] }}</p>
+        <p class="price">${{ product[0][2] }}</p>
 
         <form method='post' >
             <button class="addToKart">Add product to kart</button>
             
         </form>
 
+        <p>Owner of product is - {{product[0][5]}}</p>
 
-        {{ product[0][6] }}
+        {{ product[0][4] }}
     </div>
 {% endblock body %}
