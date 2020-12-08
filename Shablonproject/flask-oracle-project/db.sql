@@ -121,7 +121,7 @@ CREATE TABLE merchants(
     created_at DATE DEFAULT SYSDATE
 );
 
-
+CREATE SEQUENCE merchId;
 
 DROP TABLE kart;
 CREATE TABLE kart
