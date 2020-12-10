@@ -220,7 +220,7 @@ def register():
 			"email, password, first_name, last_name",
 			 email, password, first_name, last_name
 		)
-		return redirect(url_for('register'))
+		return redirect('/login')
 	else:
 		users = select_from_users('id, email, first_name, last_name')
 		return render_template('register.html', users=users)
@@ -262,7 +262,21 @@ def product_update(product_id):
 		product = select_product_from_products('id=:1' ,product_id)
 		return render_template('product_update.html', product = product)
 
-
+@app.route('/search', methods = [ 'GET'])
+def search_product():
+	if request.method =='GET':
+		if 'email' in session:
+			product_name = request.args.get('productSearch')
+			cur = conn.cursor()
+			answer = cur.callfunc('product_pkg.searchProduct',str, [product_name])
+			products_ids = answer.split()
+			products = []
+			for product_id in products_ids:
+				products.append(select_product_from_products('id=:1', (int)(product_id)))
+			print(products)
+			return render_template('search.html', products=products, searched_product=product_name)
+				
+				
 
 @app.route('/')
 def index():

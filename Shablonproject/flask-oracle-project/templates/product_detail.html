@@ -1,34 +1,75 @@
-{% extends "base.html" %}
+{% extends "header.html" %}
 
 {% block title %}Product detail{% endblock title %}
 
-{% block body %}
-    <div class="product-detail">
-        <a href="">
-            {% if product[0][3] %}
+
+
+
+
+    {% block body %}
+
+      <div class="product-page-main">
+         <div class="container">
+        
+            <div class="row">
+               <div class="col-md-12">
+                  <div class="prod-page-title">
+                     <h2>{{ product[0][1] }} is added by {{product[0][5]}}</h2>
+                     
+                  </div>
+               </div>
+            </div>
+            <div class="row">
+               
+               <div class="col-md-7 col-sm-8">
+                  <div class="md-prod-page">
+                     <div class="md-prod-page-in">
+                        <div class="page-preview">
+                           <div class="preview">
+                              <div class="preview-pic tab-content">
+                                 <div class="tab-pane active" id="pic-1"><img src="{{url_for('static', filename=('img/'+product[0][3]) )}}"  width="50px" height="100px" alt="#" /></div>
+                                 
+                              </div>
+
+                           </div>
+                        </div>
+                        
+                     </div>
+                     <div class="description-box">
+                        <div class="dex-a">
+                           <h4>Description</h4>
+                           <p>{{ product[0][4] }}
+                           </p>
+                           
+                        </div>
+                        
+                     </div>
+                  </div>
+                  
+               </div>
+               <div class="col-md-3 col-sm-12">
+                  <div class="price-box-right">
+                    {% if owner== 1%}
+			        	<a class="btn btn-primary btn-lg" href="/product/update/{{product[0][0]}}" >update product</a>
+			        	<br>
+			        
+			        	
+                        <a class="btn btn-primary btn-lg" href="/product/delete/{{product[0][0]}}">Delete product</a>
+                    {% endif %}
+			        
+			        	<br>
+                     <h4>Price</h4>
+                     <h3>$ {{ product[0][2] }}</h3>
+                     
+                      <form method="post">
+          				
+                     	<button class="addToKart">Add to cart</button>
+                     </form>
+                  </div>
+               </div>
+            </div>
             
-            <img src= "{{url_for('static', filename=('img/'+product[0][3]) )}}" alt="d">
-            
-            {%else %} 
-            <img src= "{{ url_for('static', filename='img/no_image.png') }} ">
-            {% endif %}
-        </a>
-
-        {% if owner== 1%}
-            <div><a href="/product/update/{{product[0][0]}}">update</a></div>
-            <div><a href="/product/delete/{{product[0][0]}}">delete</a></div>
-        {% endif %}
-        <h1>{{ product[0][1] }} </h1>
-
-        <p class="price">${{ product[0][2] }}</p>
-
-        <form method='post' >
-            <button class="addToKart">Add product to kart</button>
-            
-        </form>
-
-        <p>Owner of product is - {{product[0][5]}}</p>
-
-        {{ product[0][4] }}
-    </div>
-{% endblock body %}
+         </div>
+      </div>
+      
+      {% endblock body %}

@@ -1,0 +1,111 @@
+
+* {
+    box-sizing: border-box;
+    margin:     0;
+    padding:    0;
+}
+
+
+.container {
+    /*background:  #434343;*/
+    /*border: 200px;*/
+    padding-top: 100px;
+/*    padding-bottom: 100px;
+    padding-left: 200px;
+    padding-right: 200px;*/
+
+}
+
+/**
+ * login/register
+ */
+
+.form-signin-heading {
+    padding-bottom: 25px;
+}
+
+.setMargin {
+    margin-bottom: 20px;
+
+}
+
+
+/**
+ * profile/index
+ */
+
+.btn.btn-outline-success.my-2.my-sm-0 {
+    margin-right: 10px;
+}
+
+.form-control.post {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+/**
+ * other
+ */
+#inline {
+    display: inline;
+}
+
+/**
+ * footer section
+ */
+
+footer {
+    background: mediumseagreen;
+    font-size:  0.8em;
+    height:     200px;
+    position:   relative;
+    margin-top: 50px;
+    margin-bottom: 0;
+}
+
+/* footer {
+   position:fixed;
+   left:0;
+   bottom:0;
+   width:100%;
+   background:mediumseagreen;
+   font-size:  0.8em;
+}
+ */
+
+footer p {
+    text-align: center;
+}
+
+footer p.title {
+    font-size: 1.2em;
+    padding-top:   15px;
+    padding-left:   15px;
+    padding-right:   15px;
+}
+
+footer ul {
+    align-items: center;
+    display:     flex;
+    padding-top:   20px;
+    padding-left:   20px;
+    padding-right:   20px;
+}
+
+footer ul li {
+    flex: 1;
+}
+
+ul {
+  list-style: none;
+}
+
+.myPage {
+    text-align: center;
+}
+
+.error {
+	color: red;
+}
+
+

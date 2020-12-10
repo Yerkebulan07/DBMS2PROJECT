@@ -1,6 +1,6 @@
 {% extends "header.html" %}
 
-{% block title %}Product detail{% endblock title %}
+{% block title %}Searching{% endblock title %}
 
 {% block body %}
 
@@ -46,8 +46,7 @@
                </div>
             </div>
                   <div class="find-box">
-                     <h1>Products in my cart.</h1>
-                     <h4>Sum of products ${{calculate_prices}}</h4>
+                     <h1>Searching - {{searched_product}}</h1>
                      
                   </div>
                </div>
@@ -56,12 +55,9 @@
                   <div class="col-lg-3 col-sm-6 col-md-3">
                      <a href="product/{{product[0][0]}}">
                         <div class="box-img">
-                           <h4>{{ product[2] }}</h4>
+                           <h4>{{ product[0][2] }}</h4>
                            <img src="static/img/{{product[0][5]}}" alt="" />
-                           <form action="/kart/delete/{{product[0][0]}}" method="post">
-                           		<input type="hidden" name="productId" value="${product.getId() }">
-                           		<button  class="btn btn-danger">Delete this product from my card</button>
-                            </form>
+                           
                         </div>
                      </a>
                   </div>

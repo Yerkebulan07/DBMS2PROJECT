@@ -63,17 +63,21 @@ CREATE TABLE PRODUCT(
     description VARCHAR2(3000)
 );
 
-create or replace PACKAGE product_pkg AS
+CREATE OR REPLACE PACKAGE product_pkg AS
     PROCEDURE  addProduct(name VARCHAR2, merchant_id NUMBER, price NUMBER, image_url VARCHAR2, description VARCHAR2);
     FUNCTION deleteProduct(product_id NUMBER) RETURN VARCHAR2;
     FUNCTION updateProduct(product_id NUMBER, product_name VARCHAR2, p_price NUMBER, p_image_url VARCHAR2, p_description VARCHAR2) RETURN VARCHAR2;
+    FUNCTION searchProduct(product_name VARCHAR2) RETURN VARCHAR2;
 END product_pkg;
 
-create or replace PACKAGE BODY product_pkg AS
+CREATE OR REPLACE PACKAGE BODY product_pkg AS
+
     PROCEDURE  addProduct(name VARCHAR2, merchant_id NUMBER, price NUMBER, image_url VARCHAR2, description VARCHAR2) IS    
     BEGIN
         INSERT INTO PRODUCT VALUES(PRODUCTS_SEQ.nextval, merchant_id ,name, price,sysdate, image_url,description);
     END;
+
+
 
     FUNCTION deleteProduct(product_id NUMBER) RETURN VARCHAR2 AS
         TYPE t_product_array IS TABLE OF product%ROWTYPE
@@ -90,7 +94,9 @@ create or replace PACKAGE BODY product_pkg AS
         END LOOP;
         RETURN v_str;
     END;
-
+    
+    
+    
     FUNCTION updateProduct(product_id NUMBER, product_name VARCHAR2, p_price NUMBER, p_image_url VARCHAR2, p_description VARCHAR2) RETURN VARCHAR2 AS
         TYPE t_product_array IS TABLE OF product%ROWTYPE
         INDEX BY BINARY_INTEGER;
@@ -103,6 +109,21 @@ create or replace PACKAGE BODY product_pkg AS
                 UPDATE product SET name = product_name, price = p_price, CREATED_AT = sysdate, image_url = p_image_url, description = p_description WHERE id = product_id;
                 v_str:='Updated';           
             END IF;
+        END LOOP;
+        RETURN v_str;
+    END;
+    
+    FUNCTION searchProduct(product_name VARCHAR2) RETURN VARCHAR2 AS
+        TYPE product_get_type IS TABLE OF product%ROWTYPE;
+        v_product_get product_get_type;
+        v_str VARCHAR2(1000) := '';
+    BEGIN
+        SELECT * BULK COLLECT INTO v_product_get FROM product;
+        FOR i IN 1 .. v_product_get.count LOOP  
+            IF v_product_get(i).name LIKE '%' || product_name ||'%' THEN
+                v_str:= v_str || v_product_get(i).id || ' ';
+            END IF;
+                
         END LOOP;
         RETURN v_str;
     END;

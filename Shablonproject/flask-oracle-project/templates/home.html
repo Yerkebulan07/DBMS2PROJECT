@@ -1,36 +1,98 @@
-{% extends "base.html" %}
+{% extends "header.html" %}
 
 {% block title %}Home{% endblock title %}
 
 {% block body %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/authorization.css') }}">
-{% if session['email'] %}
-<h3>Hello {{ session['email']}}</h3>
-{% endif %}
 
-<div style="text-align: center;">
-    <a href="/product/create">Create a product</a>
-    <a href="/kart">My kart</a>
-</div>
-<div id="main" class="product-list">
-    <h1>Products</h1>
-    {% for product in products %}
-    <div class="item">
-        <a href="product/{{product[0]}}">
-            {% if product[5] %}
-            
-            <img src= "static/img/{{product[5]}}" alt="d">
-            
-            {%else %} 
-            <img src= "{{ url_for('static', filename='img/no_image.png') }} ">
-            {% endif %}
-        </a>
-        <a href="product/{{product[0]}}">{{ product[2] }}</a>
-        <br>
-        ${{ product[3] }}
+
+
+<div class="modal fade lug" id="myModal" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Change</h4>
+            </div>
+            <div class="modal-body">
+                <ul>
+                    <li><a href="#"><img src="images/flag-up-1.png" alt="" /> United States</a></li>
+                    <li><a href="#"><img src="images/flag-up-2.png" alt="" /> France </a></li>
+                </ul>
+            </div>
+        </div>
     </div>
-    {% endfor %}
 </div>
+<div id="sidebar" class="top-nav">
+    <ul id="sidebar-nav" class="sidebar-nav">
+        <li><a href="#">Help</a></li>
+        <li><a href="howitworks.html">How it works</a></li>
+        <li><a href="#">chamb for Business</a></li>
+    </ul>
+</div>
+<div class="page-content-product">
+    <div class="main-product">
+        <div class="container">
 
+            <div class="row clearfix">
+                <div class="container">
+                    <div class="find-box">
+                        <div class="col-sm-3">
+                            <div class="form-sh"></div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="form-sh"> <a class="btn" href="/product/create">Create </a> </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="form-sh"> <a class="btn" href="/kart">My cart</a> </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="find-box">
+                    <h1>Find your next product.</h1>
+                    <h4>It has never been easier.</h4>
+                    <div class="product-sh">
+                        <form action="/search" method="GET">
+                            <div class="col-sm-6">
+                                <div class="form-sh">
+                                    <input type="text" name="productSearch" placeholder="Search something you love">
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="form-sh">
+                                    <select class="selectpicker">
+                                        <option>Textiles</option>
+                                        <option>Furniture</option>
+                                        <option>Leather</option>
+                                    </select>
+                                </div>
+                            </div>
+
+
+                            <div class="col-sm-3">
+                                
+                                <button  class="btn btn-primary">Search</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% for product in products %}
+            <div class="row clearfix">
+                <div class="col-lg-3 col-sm-6 col-md-3">
+                    <a href="product/{{product[0]}}">
+                        <div class="box-img">
+                            <h4>{{ product[2] }}</h4>
+                            <img src="static/img/{{product[5]}}" alt="" />
+                        </div>
+                    </a>
+                </div>
+                {% endfor %}
+
+            </div>
+        </div>
+    </div>
+</div>
 
 {% endblock body %}
